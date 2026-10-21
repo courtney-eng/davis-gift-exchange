@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Davis Family Gift Exchange</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout: one narrow column, three tabs; gift-tag cards on a pine-green ground. */
+:root {
+  --bg: #f1f5f0;
+  --surface: #ffffff;
+  --surface-2: #e5ece4;
+  --fg: #14231c;
+  --muted: #5a6d63;
+  --line: #cfdacd;
+  --pine: #1f5c45;
+  --berry: #b3243b;
+  --berry-ink: #ffffff;
+  --gold: #b9791a;
+  --ok: #1f7a4d;
+  --err: #b3243b;
+  --display: "Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1b15; --surface: #16281f; --surface-2: #1d3428; --fg: #eaf2ec; --muted: #97ad9f;
+    --line: #2b4437; --pine: #5fbf94; --berry: #ef6b80; --berry-ink: #1a0a0e; --gold: #e3a94a;
+    --ok: #66c795; --err: #ff8a9b; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1b15; --surface: #16281f; --surface-2: #1d3428; --fg: #eaf2ec; --muted: #97ad9f;
+  --line: #2b4437; --pine: #5fbf94; --berry: #ef6b80; --berry-ink: #1a0a0e; --gold: #e3a94a;
+  --ok: #66c795; --err: #ff8a9b; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg); color: var(--fg); font: 16px/1.5 var(--body);
+  padding-block: 28px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+main { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; line-height: 1.1; }
+h1 { font-size: clamp(2rem, 8vw, 2.9rem); font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: 1.35rem; font-weight: 800; }
+h3 { font-size: 1.05rem; font-weight: 600; }
+p { margin: 0; }
+.muted { color: var(--muted); }
+.eyebrow { font-size: .75rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--berry); }
+
+header { display: flex; flex-direction: column; gap: 10px; }
+.stages { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+.stage { display: flex; align-items: center; gap: 8px; font-size: .85rem; color: var(--muted); padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; }
+.stage b { font-family: var(--display); }
+.stage.on { background: var(--pine); border-color: var(--pine); color: var(--bg); }
+.stage.done { color: var(--ok); border-color: var(--ok); }
+
+nav { display: flex; gap: 4px; background: var(--surface-2); padding: 4px; border-radius: 12px; }
+nav button { flex: 1; min-width: 0; border: 0; background: transparent; color: var(--muted); font: 600 .95rem var(--body); padding: 10px 6px; border-radius: 9px; cursor: pointer; }
+nav button[aria-selected="true"] { background: var(--surface); color: var(--fg); box-shadow: 0 1px 2px rgba(0,0,0,.12); }
+button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible, a:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+
+.panel { display: flex; flex-direction: column; gap: 16px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+
+label { font-size: .85rem; font-weight: 600; display: block; margin-bottom: 4px; }
+input[type=text], input[type=password], textarea, select {
+  width: 100%; font: 16px var(--body); color: var(--fg); background: var(--bg);
+  border: 1px solid var(--line); border-radius: 10px; padding: 11px 12px;
+}
+textarea { min-height: 110px; resize: vertical; }
+.member-row { display: flex; gap: 8px; }
+.member-row input { flex: 1; min-width: 0; }
+.btn { font: 600 1rem var(--body); border: 0; border-radius: 10px; padding: 12px 18px; cursor: pointer; background: var(--berry); color: var(--berry-ink); }
+.btn.quiet { background: transparent; color: var(--fg); border: 1px solid var(--line); }
+.btn.small { padding: 7px 12px; font-size: .85rem; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.icon-btn { width: 44px; flex: none; border: 1px solid var(--line); background: transparent; color: var(--muted); border-radius: 10px; font-size: 1.2rem; cursor: pointer; }
+
+.family { display: flex; flex-direction: column; gap: 10px; }
+.family-head { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { background: var(--surface-2); border-radius: 999px; padding: 3px 11px; font-size: .9rem; }
+
+.msg { font-size: .9rem; min-height: 1.3em; }
+.msg.ok { color: var(--ok); } .msg.err { color: var(--err); }
+
+/* The reveal: a gift tag with a punched hole */
+.tag { position: relative; background: var(--berry); color: var(--berry-ink); border-radius: 16px; padding: 28px 22px 26px; text-align: center; display: flex; flex-direction: column; gap: 10px; align-items: center; }
+.tag::before { content: ""; position: absolute; top: 12px; left: 50%; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%; background: var(--bg); }
+.tag .small { font-size: .8rem; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; opacity: .85; margin-top: 8px; }
+.tag .who { font-family: var(--display); font-weight: 800; font-size: clamp(2rem, 9vw, 3rem); line-height: 1.05; overflow-wrap: anywhere; }
+.tag .btn { background: var(--berry-ink); color: var(--berry); }
+.ideas { white-space: pre-wrap; overflow-wrap: anywhere; }
+.ideas a { color: var(--pine); font-weight: 600; }
+.pin-box { max-width: 220px; }
+.hint { font-size: .85rem; color: var(--muted); }
+.status-line { display: flex; gap: 8px; align-items: center; font-weight: 600; }
+.dot { width: 10px; height: 10px; border-radius: 50%; background: var(--gold); flex: none; }
+.dot.go { background: var(--ok); }
+[hidden] { display: none !important; }
+@media (prefers-reduced-motion: no-preference) { .tag { animation: pop .35s ease-out; } @keyframes pop { from { transform: scale(.96); opacity: 0; } } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <span class="eyebrow">Davis family · 2026</span>
+    <h1>Gift Exchange</h1>
+    <div class="stages" id="stages" aria-label="Progress"></div>
+  </header>
+
+  <nav role="tablist" aria-label="Sections">
+    <button role="tab" id="t-signup" data-tab="signup">Add my family</button>
+    <button role="tab" id="t-mine" data-tab="mine">My person</button>
+    <button role="tab" id="t-org" data-tab="org">Organizer</button>
+  </nav>
+
+  <!-- 1. Sign up -->
+  <section class="panel" id="p-signup" role="tabpanel" aria-labelledby="t-signup">
+    <form class="card" id="family-form" autocomplete="off">
+      <div>
+        <h2 id="form-title">Add your family</h2>
+        <p class="muted">Enter everyone in your immediate family who wants in, yourself included. You won't draw anyone from your own family.</p>
+      </div>
+      <div>
+        <label for="fam-name">Family name</label>
+        <input type="text" id="fam-name" placeholder="Tyler's family" maxlength="60">
+      </div>
+      <div>
+        <label>Who's in?</label>
+        <div id="members" style="display:flex;flex-direction:column;gap:8px"></div>
+      </div>
+      <div class="row">
+        <button type="button" class="btn quiet" id="add-member">+ Add another person</button>
+        <button type="submit" class="btn" id="save-family">Save family</button>
+        <button type="button" class="btn quiet" id="cancel-edit" hidden>Cancel edit</button>
+      </div>
+      <p class="msg" id="family-msg" role="status"></p>
+    </form>
+    <div id="families" style="display:flex;flex-direction:column;gap:12px"></div>
+  </section>
+
+  <!-- 3. My person -->
+  <section class="panel" id="p-mine" role="tabpanel" aria-labelledby="t-mine" hidden>
+    <div class="card">
+      <div>
+        <label for="me-select">Who are you?</label>
+        <select id="me-select"></select>
+      </div>
+      <p class="hint" id="me-hint"></p>
+    </div>
+    <div id="me-result" style="display:flex;flex-direction:column;gap:16px"></div>
+  </section>
+
+  <!-- 2. Organizer -->
+  <section class="panel" id="p-org" role="tabpanel" aria-labelledby="t-org" hidden>
+    <div class="card">
+      <h2>Run the draw</h2>
+      <div class="status-line"><span class="dot" id="ready-dot"></span><span id="ready-text">Checking…</span></div>
+      <p class="hint">Once everyone's family is added, enter the organizer PIN and draw. Names are matched at random, and nobody gets themselves or anyone in their own family.</p>
+      <div class="pin-box">
+        <label for="pin">Organizer PIN</label>
+        <input type="password" id="pin" inputmode="numeric" autocomplete="off">
+      </div>
+      <div class="row">
+        <button class="btn" id="draw-btn">Draw names</button>
+        <button class="btn quiet" id="reset-btn" hidden>Reset the draw</button>
+      </div>
+      <p class="msg" id="org-msg" role="status"></p>
+    </div>
+    <div class="card" id="text-card" hidden>
+      <h3>Names are drawn</h3>
+      <p class="muted">Copy this and text it to the family.</p>
+      <textarea id="blast" readonly style="min-height:90px"></textarea>
+      <div class="row"><button class="btn small" id="copy-blast">Copy message</button><span class="msg" id="copy-msg"></span></div>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch {} },
+  };
+  let state = { families: [], drawn: false, ideasFrom: [] };
+  let editingId = null;
+  let revealed = false;
+
+  async function api(route, body) {
+    const res = await fetch("/api/" + route, {
+      method: body ? "POST" : "GET",
+      headers: { "content-type": "application/json" },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || "Something went wrong. Try again.");
+    return data;
+  }
+  const say = (id, text, kind) => { const el = $(id); el.textContent = text || ""; el.className = "msg " + (kind || ""); };
+  const el = (tag, props = {}, ...kids) => {
+    const n = document.createElement(tag);
+    for (const [k, v] of Object.entries(props)) {
+      if (k === "class") n.className = v;
+      else if (k.startsWith("on")) n.addEventListener(k.slice(2), v);
+      else n[k] = v;
+    }
+    for (const kid of kids) n.append(kid);
+    return n;
+  };
+  const people = () => state.families.flatMap((f) => f.members.map((name) => ({ name, family: f.name })));
+
+  // ----- tabs
+  function showTab(tab) {
+    for (const t of ["signup", "mine", "org"]) {
+      $("p-" + t).hidden = t !== tab;
+      $("t-" + t).setAttribute("aria-selected", String(t === tab));
+    }
+    store.set("tab", tab);
+  }
+  document.querySelectorAll("nav button").forEach((b) => b.addEventListener("click", () => showTab(b.dataset.tab)));
+
+  // ----- stages
+  function renderStages() {
+    const n = people().length;
+    const stage = state.drawn ? 3 : 1;
+    const items = [
+      ["1", "Sign up", stage > 1 ? "done" : "on"],
+      ["2", "Draw", state.drawn ? "done" : ""],
+      ["3", "Reveal", state.drawn ? "on" : ""],
+    ];
+    $("stages").replaceChildren(...items.map(([num, label, cls]) =>
+      el("span", { class: "stage " + cls }, el("b", { textContent: num }), label)));
+    $("stages").append(el("span", { class: "stage", textContent: `${n} ${n === 1 ? "person" : "people"} in` }));
+  }
+
+  // ----- sign up
+  function memberRow(value = "") {
+    const input = el("input", { type: "text", maxLength: 60, value, placeholder: "First name", autocomplete: "off" });
+    input.setAttribute("aria-label", "Family member name");
+    const rm = el("button", { type: "button", class: "icon-btn", textContent: "×", title: "Remove",
+      onclick: () => { if ($("members").children.length > 1) rm.parentElement.remove(); else input.value = ""; } });
+    rm.setAttribute("aria-label", "Remove this person");
+    return el("div", { class: "member-row" }, input, rm);
+  }
+  function resetForm() {
+    editingId = null;
+    $("fam-name").value = "";
+    $("members").replaceChildren(memberRow(), memberRow(), memberRow());
+    $("form-title").textContent = "Add your family";
+    $("save-family").textContent = "Save family";
+    $("cancel-edit").hidden = true;
+  }
+  $("add-member").addEventListener("click", () => {
+    const row = memberRow(); $("members").append(row); row.firstChild.focus();
+  });
+  $("cancel-edit").addEventListener("click", () => { resetForm(); say("family-msg", ""); });
+  $("family-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    say("family-msg", "Saving…");
+    try {
+      await api("family", {
+        id: editingId,
+        name: $("fam-name").value,
+        members: [...$("members").querySelectorAll("input")].map((i) => i.value),
+      });
+      const saved = $("fam-name").value.trim();
+      resetForm();
+      await refresh();
+      say("family-msg", `Saved ${saved}. Next family can go right in.`, "ok");
+    } catch (err) { say("family-msg", err.message, "err"); }
+  });
+
+  function renderFamilies() {
+    const box = $("families");
+    if (!state.families.length) {
+      box.replaceChildren(el("p", { class: "muted", textContent: "No families yet. The first one you add shows up here." }));
+      return;
+    }
+    box.replaceChildren(...state.families.map((f) => {
+      const edit = el("button", { class: "btn quiet small", textContent: "Edit", disabled: state.drawn, onclick: () => {
+        editingId = f.id;
+        $("fam-name").value = f.name;
+        $("members").replaceChildren(...f.members.map((m) => memberRow(m)));
+        $("form-title").textContent = "Edit " + f.name;
+        $("save-family").textContent = "Save changes";
+        $("cancel-edit").hidden = false;
+        $("fam-name").scrollIntoView({ behavior: "smooth", block: "center" });
+      }});
+      const del = el("button", { class: "btn quiet small", textContent: "Remove", disabled: state.drawn, onclick: async () => {
+        if (del.dataset.armed !== "1") { del.dataset.armed = "1"; del.textContent = "Tap again to remove"; return; }
+        try { await api("remove-family", { id: f.id }); await refresh(); } catch (err) { say("family-msg", err.message, "err"); }
+      }});
+      return el("div", { class: "card family" },
+        el("div", { class: "family-head" }, el("h3", { textContent: f.name }), el("div", { class: "row" }, edit, del)),
+        el("div", { class: "chips" }, ...f.members.map((m) => el("span", { class: "chip", textContent: m }))));
+    }));
+  }
+
+  // ----- my person
+  function linkify(text) {
+    const out = el("p", { class: "ideas" });
+    const re = /(https?:\/\/[^\s<>"']+)/g;
+    let last = 0, m;
+    while ((m = re.exec(text))) {
+      out.append(text.slice(last, m.index));
+      let href = m[0], trail = "";
+      while (/[.,;:!?)]$/.test(href)) { trail = href.slice(-1) + trail; href = href.slice(0, -1); }
+      out.append(el("a", { href, target: "_blank", rel: "noopener noreferrer", textContent: href }), trail);
+      last = m.index + m[0].length;
+    }
+    out.append(text.slice(last));
+    return out;
+  }
+
+  function renderSelect() {
+    const sel = $("me-select");
+    const prev = sel.value || store.get("me") || "";
+    sel.replaceChildren(el("option", { value: "", textContent: "Pick your name" }));
+    for (const f of state.families) {
+      const g = el("optgroup", { label: f.name });
+      for (const m of f.members) g.append(el("option", { value: m, textContent: m }));
+      sel.append(g);
+    }
+    if (people().some((p) => p.name === prev)) sel.value = prev;
+    renderMe();
+  }
+
+  async function renderMe() {
+    const name = $("me-select").value;
+    const out = $("me-result");
+    if (!name) {
+      $("me-hint").textContent = state.drawn ? "Pick your name to see who you're buying for." : "Pick your name. You can add gift ideas now, and your match appears here after the draw.";
+      out.replaceChildren();
+      return;
+    }
+    store.set("me", name);
+    $("me-hint").textContent = "";
+    let me;
+    try { me = await api("me", { name }); } catch (err) { out.replaceChildren(el("p", { class: "msg err", textContent: err.message })); return; }
+    if ($("me-select").value !== name) return;
+
+    const blocks = [];
+    if (me.drawn && me.recipient) {
+      const tag = el("div", { class: "tag" });
+      if (!revealed) {
+        tag.append(el("span", { class: "small", textContent: "Your gift exchange name" }),
+          el("button", { class: "btn", textContent: "Tap to reveal", onclick: () => { revealed = true; renderMe(); } }));
+      } else {
+        tag.append(el("span", { class: "small", textContent: "You're buying for" }), el("div", { class: "who", textContent: me.recipient.name }));
+      }
+      blocks.push(tag);
+      if (revealed) {
+        blocks.push(el("div", { class: "card" },
+          el("h3", { textContent: `${me.recipient.name}'s ideas` }),
+          me.recipient.ideas ? linkify(me.recipient.ideas)
+            : el("p", { class: "muted", textContent: `${me.recipient.name} hasn't added any ideas yet. Check back before you shop.` })));
+      }
+    } else if (me.drawn) {
+      blocks.push(el("div", { class: "card" }, el("p", { textContent: "Names are drawn, but there's no match for you. Ask the organizer." })));
+    } else {
+      blocks.push(el("div", { class: "card" }, el("h3", { textContent: "Waiting on the draw" }),
+        el("p", { class: "muted", textContent: "Once every family is added, the organizer draws names. Open this link again after that to see who you got." })));
+    }
+
+    const ta = el("textarea", { id: "my-ideas", maxLength: 2000, value: me.myIdeas, placeholder: "Sizes, favorite things, hobbies, wish list links…" });
+    const msg = el("p", { class: "msg", role: "status" });
+    const save = el("button", { class: "btn", textContent: "Save my ideas", onclick: async () => {
+      msg.textContent = "Saving…"; msg.className = "msg";
+      try { await api("ideas", { name, text: ta.value }); msg.textContent = "Saved. Whoever drew you can see this."; msg.className = "msg ok"; }
+      catch (err) { msg.textContent = err.message; msg.className = "msg err"; }
+    }});
+    blocks.push(el("div", { class: "card" },
+      el("div", {}, el("h3", { textContent: "Your own ideas" }), el("p", { class: "muted", textContent: "Whoever gets you will see this. Links are welcome." })),
+      el("div", {}, el("label", { htmlFor: "my-ideas", textContent: `Gift ideas for ${name}` }), ta),
+      el("div", { class: "row" }, save), msg));
+    out.replaceChildren(...blocks);
+  }
+  $("me-select").addEventListener("change", () => { revealed = false; renderMe(); });
+
+  // ----- organizer
+  async function renderOrganizer() {
+    $("reset-btn").hidden = !state.drawn;
+    $("draw-btn").disabled = state.drawn;
+    $("text-card").hidden = !state.drawn;
+    if (state.drawn) {
+      $("ready-dot").className = "dot go";
+      $("ready-text").textContent = "Names are drawn.";
+      $("blast").value = `The Davis gift exchange names are drawn! Open the link to see who you're buying for, and add your own gift ideas: ${location.href.split("#")[0]}`;
+      return;
+    }
+    try {
+      const c = await api("check");
+      $("ready-dot").className = "dot" + (c.ready ? " go" : "");
+      $("ready-text").textContent = c.ready
+        ? `Ready: ${c.people} people in ${c.families} families.`
+        : c.reason;
+    } catch { $("ready-text").textContent = ""; }
+  }
+  $("draw-btn").addEventListener("click", async () => {
+    say("org-msg", "Drawing…");
+    try {
+      await api("draw", { pin: $("pin").value });
+      $("pin").value = "";
+      say("org-msg", "Done. Everyone can open the link to see their match.", "ok");
+      await refresh();
+    } catch (err) { say("org-msg", err.message, "err"); }
+  });
+  $("reset-btn").addEventListener("click", async (e) => {
+    const b = e.currentTarget;
+    if (b.dataset.armed !== "1") { b.dataset.armed = "1"; b.textContent = "Tap again to erase the draw"; return; }
+    b.dataset.armed = ""; b.textContent = "Reset the draw";
+    try { await api("reset", { pin: $("pin").value }); say("org-msg", "Draw erased. Families can be edited again.", "ok"); await refresh(); }
+    catch (err) { say("org-msg", err.message, "err"); }
+  });
+  $("copy-blast").addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText($("blast").value); say("copy-msg", "Copied.", "ok"); }
+    catch { $("blast").select(); say("copy-msg", "Select and copy the text above.", ""); }
+  });
+
+  async function refresh() {
+    try { state = await api("state"); } catch (err) { say("family-msg", err.message, "err"); return; }
+    renderStages(); renderFamilies(); renderSelect(); renderOrganizer();
+  }
+
+  resetForm();
+  refresh().then(() => {
+    const saved = store.get("tab");
+    showTab(state.drawn && (!saved || saved === "signup") ? "mine" : saved || "signup");
+  });
+})();
+</script>
+</body>
+</html>
